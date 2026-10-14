@@ -27,3 +27,6 @@
 .site-header .wordmark,.site-footer .wordmark{display:inline-block;min-height:44px;line-height:44px}
 
 @media(max-width:480px){.site-header nav a:nth-child(2){display:none}}
+
+/* Exact supplied hero artwork: retain the complete image at its natural aspect ratio. */
+.hero-art img.qf-hero-mark{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
