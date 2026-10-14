@@ -6,3 +6,24 @@
 @media(max-width:760px){.page-wrap{padding:0 25px}.site-header{padding:23px 0;gap:20px}.wordmark{font-size:22px}.site-header nav{gap:20px;font-size:11px}.site-header nav a:last-child{display:none}.hero{grid-template-columns:1fr;gap:23px;padding:48px 0 48px}h1{font-size:clamp(77px,15vw,108px);letter-spacing:-4px}.hero-tagline{max-width:480px;font-size:18px}.hero-description{max-width:450px}.hero-art{max-width:320px;justify-self:center}.composition{max-height:325px}.art-caption{margin-top:-5px}.section{padding:43px 0 48px}.section-heading{align-items:start;flex-direction:column;gap:18px;margin-bottom:28px}.section-intro{max-width:350px}.product-grid{grid-template-columns:1fr;gap:43px}.product-art{margin-bottom:20px}.product-art svg{height:245px;width:100%;margin:13px 0;object-fit:contain}.art-label{font-size:9px;left:19px;top:15px}.product-card>p{max-width:100%;font-size:14px}.product-card details{margin-top:0}h3{font-size:28px}.product-title{column-gap:15px}.status{font-size:10px}.text-link{font-size:13px}.product-card summary{font-size:12px}.studio-layout{grid-template-columns:1fr;gap:26px}.studio-copy{max-width:520px}.studio>.eyebrow,.next>.eyebrow{margin-bottom:23px}.next-layout{grid-template-columns:1fr 55px;gap:24px}.next-layout>h2{grid-column:1/-1}.next-layout>p{max-width:470px}.next-symbol{font-size:56px}.site-footer{flex-wrap:wrap;row-gap:15px}.site-footer .wordmark{width:100%}.site-footer p,.site-footer small{font-size:10px}}
 @media(max-width:390px){.page-wrap{padding:0 20px}.site-header nav{gap:14px}.wordmark{font-size:20px}h1{font-size:73px}.hero-tagline{font-size:17px}.status{font-size:9px}.next-layout{grid-template-columns:1fr}.next-symbol{justify-self:start}.site-footer{gap:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+
+/* Agent hub: action-led cards, restrained future tools, existing QF identity retained. */
+.hero-tagline{font-family:var(--serif);font-size:27px;line-height:1.3;letter-spacing:-.7px;max-width:470px}
+.agent-card .product-title{display:block}.agent-card h3{font-size:39px;letter-spacing:-1.1px}
+.agent-subtitle{font-family:var(--serif);font-size:21px!important;color:var(--ink)!important;line-height:1.35!important;margin-bottom:12px!important}
+.agent-attribution{font-size:11px!important;margin-top:auto;margin-bottom:17px!important}
+.agent-card .text-link{border-top:1px solid var(--line);padding:13px 0;font-size:13px;min-height:48px}
+.early-access-note{border-left:2px solid var(--accent);padding-left:14px;margin-top:19px;font-size:12px!important}
+.how-steps{list-style:none;padding:0;margin:38px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:27px}
+.how-steps li{border-top:1px solid var(--line);padding-top:17px}.how-steps li>span{font-size:10px;color:var(--accent)}
+.how-steps h3{font-size:23px;margin:12px 0 10px}.how-steps p{font-size:12px;color:var(--muted);line-height:1.85;max-width:330px}
+.future-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:27px}.future-card{border-top:1px solid var(--line);padding:22px 0 0}
+.future-title{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:15px}
+.future-title h3{font-size:27px;letter-spacing:-.6px}.coming-soon{font-size:10px;color:var(--muted);border:1px solid var(--line);padding:4px 8px}
+.future-card p{font-size:12px;line-height:1.85;color:var(--muted);max-width:340px}.future-card .future-subtitle{color:var(--ink);margin-bottom:10px;font-family:var(--serif);font-size:20px;line-height:1.4}
+.site-header nav a{min-height:44px;display:flex;align-items:center}
+@media(max-width:760px){.hero-tagline{font-size:26px}.how-steps,.future-grid{grid-template-columns:1fr;gap:27px}.how-steps p,.future-card p{max-width:100%}.future-title{justify-content:start;gap:18px}.agent-card h3{font-size:37px}.agent-subtitle{font-size:22px!important}.agent-card .product-art svg{height:210px}.future-card{padding-top:21px}}
+
+.site-header .wordmark,.site-footer .wordmark{display:inline-block;min-height:44px;line-height:44px}
+
+@media(max-width:480px){.site-header nav a:nth-child(2){display:none}}

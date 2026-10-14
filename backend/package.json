@@ -1,0 +1,8 @@
+{
+  "name": "question-and-form-delayed-queue",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test/worker.test.mjs"
+  }
+}
