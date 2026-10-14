@@ -1,0 +1,2 @@
+# Copy to .dev.vars for local testing only. This file contains placeholders, not credentials.
+GITHUB_QUEUE_TOKEN=
