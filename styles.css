@@ -30,3 +30,5 @@
 
 /* Exact supplied hero artwork: retain the complete image at its natural aspect ratio. */
 .hero-art img.qf-hero-mark{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+
+[hidden]{display:none!important}.quiet-layout{display:grid;grid-template-columns:2fr 1fr;gap:45px;align-items:start}.quiet-layout p{max-width:650px;font-size:14px;line-height:1.9;color:var(--muted)}.quiet-layout .primary-link{justify-self:end}.help-link{margin-top:20px}@media(max-width:700px){.quiet-layout{grid-template-columns:1fr;gap:22px}.quiet-layout .primary-link{justify-self:start}}

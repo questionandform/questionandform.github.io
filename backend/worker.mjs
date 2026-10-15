@@ -1,3 +1,4 @@
+import { normalizeOptions, persistOptions, recordAnswer, withdrawConsents, publicThreads } from "./community-leads.mjs";
 /* QF delayed-answer gateway. No AI API calls and no email sending.
    Visitor input is data only. It never selects a repository, file path, tool, or command. */
 const AGENTS = Object.freeze({
@@ -54,7 +55,7 @@ async function readJson(request) {
 }
 function validateSubmission(value, origin, env) {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw publicError("invalid_request", 400);
-  const allowed = ["request_id", "agent", "source_site", "question", "email", "website"];
+  const allowed = ["request_id", "agent", "source_site", "question", "email", "website", "options"];
   if (Object.keys(value).some(k => !allowed.includes(k))) throw publicError("invalid_fields", 400);
   if (value.website) throw publicError("invalid_request", 400);
   const agent = Object.hasOwn(AGENTS, value.agent) ? AGENTS[value.agent] : null;
@@ -66,7 +67,7 @@ function validateSubmission(value, origin, env) {
   if (value.email !== undefined && typeof value.email !== "string") throw publicError("invalid_email", 400);
   const email = (value.email || "").trim();
   if (email && (env.EMAIL_COLLECTION_ENABLED !== "true" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || /[\r\n]/.test(email))) throw publicError("email_unavailable_or_invalid", 400);
-  return { request_id: value.request_id.toLowerCase(), agent: value.agent, source_site: agent.source, question: value.question.trim(), email: email || null };
+  return { request_id: value.request_id.toLowerCase(), agent: value.agent, source_site: agent.source, question: value.question.trim(), email: email || null, options: normalizeOptions(value.options, value.agent, env) };
 }
 async function rateLimit(request, env, scope) {
   if (!env.RATE_LIMITER) throw publicError("service_not_ready", 503);
@@ -136,9 +137,11 @@ async function syncOne(row, env) {
 }
 function validateAnswer(value, row) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const allowed = ["schema_version", "request_id", "agent", "answer"];
+  const allowed = ["schema_version", "request_id", "agent", "answer", "sections", "review_required"];
   if (Object.keys(value).some(k => !allowed.includes(k))) return null;
   if (value.schema_version !== 1 || value.request_id !== row.request_id || value.agent !== row.agent || typeof value.answer !== "string" || !value.answer.trim() || value.answer.length > 16000) return null;
+  if (value.review_required !== undefined && typeof value.review_required !== "boolean") return null;
+  if (value.sections !== undefined && (!Array.isArray(value.sections) || value.sections.length > 6 || value.sections.some(section => !section || Object.keys(section).some(k => !["heading","text"].includes(k)) || typeof section.heading !== "string" || section.heading.length > 80 || typeof section.text !== "string" || section.text.length > 2000))) return null;
   return value.answer.trim();
 }
 async function refreshAnswer(row, env) {
@@ -146,13 +149,17 @@ async function refreshAnswer(row, env) {
   await assertPrivateQueue(env);
   const file = await github(env, "/contents/answers/" + row.request_id + ".json");
   if (!file) return row;
-  const answer = validateAnswer(JSON.parse(fromBase64(file.content)), row);
+  const envelope = JSON.parse(fromBase64(file.content));
+  const answer = validateAnswer(envelope, row);
   if (!answer) throw new Error("invalid_answer");
+  await recordAnswer(env.DB, row, answer, undefined, envelope.review_required === true);
+  if (envelope.review_required === true) return row;
   await env.DB.prepare("UPDATE requests SET status = 'answered', answer = ?, updated_at = ? WHERE request_id = ? AND status = 'pending'").bind(answer, new Date().toISOString(), row.request_id).run();
   return { ...row, status: "answered", answer };
 }
 async function createRequest(request, env, ctx, origin) {
   if (env.ENABLE_SUBMISSIONS !== "true" || !env.DB) throw publicError("service_not_ready", 503);
+  if (request.headers.get("Origin") === AGENTS.THINK.origin && env.THINK_HTTPS_VERIFIED !== "true") throw publicError("think_https_launch_blocked", 503);
   await rateLimit(request, env, "submit");
   const token = request.headers.get("X-Request-Token");
   if (!TOKEN.test(token || "")) throw publicError("invalid_receipt", 400);
@@ -164,6 +171,7 @@ async function createRequest(request, env, ctx, origin) {
   const row = await env.DB.prepare("SELECT * FROM requests WHERE request_id = ? AND access_hash = ?").bind(data.request_id, accessHash).first();
   if (!row || row.agent !== data.agent || row.source_site !== data.source_site || row.question !== data.question || row.email !== data.email) throw publicError("request_conflict", 409);
   if (row.expires_at <= now) throw publicError("receipt_expired", 410);
+  await persistOptions(env.DB, row, data.options, now);
   // Only return pending after a durable write. Sync failures leave a retryable local outbox.
   if (queueConfigured(env)) ctx.waitUntil(syncOne(row, env).catch(() => {}));
   return reply(publicRecord(row), 202, origin);
@@ -183,6 +191,11 @@ async function getRequest(request, env, origin, id) {
 async function fetchHandler(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/health" && request.method === "GET") return reply({ service: "qf-questions", submissions_enabled: env.ENABLE_SUBMISSIONS === "true" }, 200, corsOrigin(request, env));
+  if (url.pathname === "/v1/community" && request.method === "GET") {
+    const publicOrigin = request.headers.get("Origin") === "https://questionandform.github.io" ? "https://questionandform.github.io" : corsOrigin(request, env);
+    try { return reply({ threads: await publicThreads(env.DB, env), comments_enabled: false }, 200, publicOrigin); }
+    catch { return reply({ error: "service_unavailable" },503,publicOrigin); }
+  }
   const origin = corsOrigin(request, env);
   if (!origin) return reply({ error: "origin_not_allowed" }, 403, null);
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: {
@@ -191,6 +204,18 @@ async function fetchHandler(request, env, ctx) {
   } });
   try {
     if (url.pathname === "/v1/requests" && request.method === "POST") return await createRequest(request, env, ctx, origin);
+    const withdrawal = url.pathname.match(/^\/v1\/requests\/([0-9a-f-]+)\/consents$/i);
+    if (withdrawal && request.method === "POST") {
+      if (!env.DB) throw publicError("service_not_ready",503);
+      await rateLimit(request,env,"consent");
+      const token = request.headers.get("X-Request-Token");
+      if (!UUID.test(withdrawal[1]) || !TOKEN.test(token || "")) throw publicError("receipt_not_found",404);
+      const row = await env.DB.prepare("SELECT * FROM requests WHERE request_id = ? AND access_hash = ?").bind(withdrawal[1].toLowerCase(),await sha256(token)).first();
+      const local = env.ALLOW_LOCAL_TESTING === "true" && origin === env.LOCAL_ORIGIN;
+      if (!row || (!local && AGENTS[row.agent]?.origin !== origin)) throw publicError("receipt_not_found",404);
+      if (row.expires_at <= new Date().toISOString()) throw publicError("receipt_expired",410);
+      return reply(await withdrawConsents(env.DB,row,await readJson(request)),200,origin);
+    }
     const match = url.pathname.match(/^\/v1\/requests\/([0-9a-f-]+)$/i);
     if (match && request.method === "GET") return await getRequest(request, env, origin, match[1]);
     return reply({ error: "not_found" }, 404, origin);

@@ -5,6 +5,7 @@ import { fetchHandler, syncOne, refreshAnswer, queuePayload, validateAnswer, sch
 
 class D1 {
   constructor(sql) { this.sqlite = new DatabaseSync(":memory:"); this.sqlite.exec(sql); }
+  async batch(commands) { this.sqlite.exec("BEGIN"); try { const results=[]; for (const c of commands) results.push(await c.run()); this.sqlite.exec("COMMIT"); return results; } catch(error) { this.sqlite.exec("ROLLBACK"); throw error; } }
   prepare(sql) {
     const stmt = this.sqlite.prepare(sql);
     let args = [];
@@ -19,7 +20,7 @@ class D1 {
 export async function verifyBackend() {
   const schema = await readFile(new URL("../schema.sql", import.meta.url), "utf8");
   const db = new D1(schema);
-  const env = { DB: db, ENABLE_SUBMISSIONS: "true", RATE_LIMITER: { async limit() { return { success: true }; } } };
+  const env = { DB: db, ENABLE_SUBMISSIONS: "true", THINK_HTTPS_VERIFIED: "true", RATE_LIMITER: { async limit() { return { success: true }; } } };
   const jobs = [];
   const ctx = { waitUntil(promise) { jobs.push(promise); } };
   const origin = "https://learnwithlev.com";
