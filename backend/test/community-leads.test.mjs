@@ -111,7 +111,9 @@ await check("only approved anonymous answered consented records produce a public
  await publishThread(db,approved.public_id,admin,{ENABLE_COMMUNITY_PUBLICATION:"true"});
  const publicRows=await publicThreads(db,{ENABLE_COMMUNITY_PUBLICATION:"true"});
  assert.equal(publicRows.length,1);
- for(const key of ["request_id","access_hash","contact_email","help_json","reviewed_by"])assert(!Object.hasOwn(publicRows[0],key));
+ for(const key of ["request_id","access_hash","contact_email","help_json","reviewed_by","provider_key","preferred_first_look","preferred_provider_key","accept_decline_window_hours","fallback_provider_keys"])assert(!Object.hasOwn(publicRows[0],key));
+ assert.equal(publicRows[0].canonical_url,"https://themakerhome.com/community/"+publicRows[0].slug+"/");
+ assert.equal(publicRows[0].source_site,"themakerhome.com");
  assert.equal(publicRows[0].contribution_count,0);
 });
 await check("community withdrawal is idempotent and immediately hides the thread",async()=>{

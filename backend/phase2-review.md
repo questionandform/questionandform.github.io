@@ -55,3 +55,8 @@ Active curated agents: THINK, SHAPE, MAKE. Inactive curated cards: ARRANGE (musi
 All submission, contact/email, publication, comments and routing flags stay false. No Worker/D1, scheduler, private production queue, email sender or admin service is provisioned. LearnWithLev HTTPS has a certificate hostname mismatch and THINK_HTTPS_VERIFIED remains false. Do not repair DNS, certificates, CNAME or domain settings here. Preserve the approved hero bytes and landing pages. No paid service, DNS/SPF/DKIM/WhatsApp integration. WhatsApp is documentation-only as a possible future Business Platform channel, never a personal account.
 
 Before activation: approve privacy/retention/minor policies, implement private admin authentication, validate migration/deletion, least-privilege private queue and all seven scheduled-task checks, fix THINK HTTPS under separate authorization, rehearse moderation/takedown, and obtain explicit approval. A successful local fixture or mocked test does not authorize activation.
+
+
+## Refined model supersedes the original hub-hosted thread plan
+
+Read [the refined community model](community-model-review.md). Canonical threads belong on each vertical; Question & Form aggregates approved summaries. All unfinished UI is hidden by nine false public display flags. Local review fixtures are separate from production-safe pages, and review mode cannot submit. Professional reputation/matching and private first-look remain manual design scaffolds. The original review does not authorize activation or a merge.

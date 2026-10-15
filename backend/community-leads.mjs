@@ -170,7 +170,8 @@ export async function publishThread(db,id,auth,env={}){
 export async function publicThreads(db,env={},slug=null){
  if(env.ENABLE_COMMUNITY_PUBLICATION!=="true"||!db)return [];
  const rows=await stmt(db,"SELECT t.public_id,t.slug,t.agent,t.title,t.question,t.answer,t.summary,t.broad_region,t.published_at,(SELECT COUNT(*) FROM community_contributions x WHERE x.thread_id=t.public_id AND x.state='approved') AS contribution_count FROM community_threads t JOIN community_publication_requests c ON c.id=t.publication_request_id JOIN requests r ON r.request_id=c.request_id JOIN request_preferences p ON p.request_id=r.request_id WHERE t.state='published' AND c.state='approved' AND p.community_active=1 AND EXISTS (SELECT 1 FROM consent_events ce WHERE ce.request_id=r.request_id AND ce.scope='community' AND ce.action='grant' AND ce.version='community-v1-2026-10-15') AND r.status='answered' AND t.pii_removed=1 AND t.moderation_approved=1 AND (p.minor_related=0 OR t.minor_review_approved=1) AND r.expires_at > ? AND (? IS NULL OR t.slug=?) ORDER BY t.published_at DESC LIMIT 50",new Date().toISOString(),slug,slug).all();
- return rows.results;
+ const sites={THINK:["learnwithlev.com","mathematics"],SHAPE:["3dddesign.com","spatial design"],MAKE:["themakerhome.com","practical projects"]};
+ return rows.results.map(row=>({...row,source_site:sites[row.agent][0],canonical_url:"https://"+sites[row.agent][0]+"/community/"+row.slug+"/",topic:sites[row.agent][1],professional_contribution_count:0,professional_contributions:[]}));
 }
 const transitions={
  new:["needs_information","reviewed","closed","spam"],needs_information:["reviewed","closed","spam"],

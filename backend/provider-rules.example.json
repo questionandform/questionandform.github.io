@@ -24,6 +24,14 @@
       "preferred_characteristics": [
         "one_day",
         "materials_available"
+      ],
+      "preferred_first_look": false,
+      "accept_decline_window_hours": 24,
+      "maximum_project_size": "small",
+      "newcomer": true,
+      "last_considered_at": null,
+      "expertise": [
+        "practical projects"
       ]
     }
   ]
