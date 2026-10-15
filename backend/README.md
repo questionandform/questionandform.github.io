@@ -111,3 +111,8 @@ Cloudflare documentation:
 - https://developers.cloudflare.com/d1/worker-api/prepared-statements/
 - https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
 - https://developers.cloudflare.com/d1/reference/faq/
+
+
+## Community and human-help review
+
+This review extends the current release with independent consent, conditional help fields, noindex community templates and private manual lead functions. All production gates stay off. Read [the Phase 2 specification](phase2-review.md) for schema migration, consent withdrawal, retention/deletion, dashboard authentication, Facebook/taxonomy and activation blockers. Run `npm test` in backend with Node 22.13+ for both regression and extension suites. Do not merge before screenshot/report approval.

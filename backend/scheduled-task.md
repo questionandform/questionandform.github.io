@@ -1,6 +1,8 @@
-# Future ChatGPT queue processor — durable prompt template
+# Periodic private queue processor — prepared, unverified
 
 Status: prepared only. No task or recurrence has been created. Replace OWNER/PRIVATE_QUEUE with an authorized PRIVATE repository and test manually before scheduling.
+
+Queue-file creation and GitHub Issues do not trigger ChatGPT. A future recurring polling task must be explicitly configured and tested. No task, trigger, unattended run, or production queue has been created here. Interactive tool approvals can pause a run. Account eligibility and connection capabilities must be verified; a subscription is not an API credential. Official reference: https://learn.chatgpt.com/docs/automations
 
 ## Capability boundary
 
@@ -24,10 +26,23 @@ You process unanswered questions for Question & Form in OWNER/PRIVATE_QUEUE.
    request_id: <same validated UUID>
    agent: <same allowed agent>
    answer: <plain-text answer, at most 16,000 characters>
-8. Check the answer file does not already exist before creation. If creation reports a conflict, re-read it; do not overwrite a previous answer. Do not edit request records.
-9. Never place email addresses, credentials, receipt tokens, or unrelated personal data in the answer record. Never write source code, workflows, config, labels, Issues, comments, or other paths.
-10. Return only a short operational count of processed/skipped/failed records in ChatGPT. Do not include visitor text or answers in a public report. If permissions, schemas, or private access are uncertain, stop instead of broadening access.
+   Optional sections: up to 6 objects, each with heading (up to 80 characters) and text (up to 2,000 characters).
+   Optional review_required: boolean. Set true whenever uncertain, unsafe, identifying, or outside scope. The Worker keeps these items pending until an authorized private answer review. Never write an instruction to execute later.
+8. Never publish a community thread, moderate public content, create or route a lead, send a notification, or contact a person. Those require separate human approval outside this task.
+9. Check the answer file does not already exist before creation. If creation reports a conflict, re-read it; do not overwrite a previous answer. Do not edit request records.
+10. Never place email addresses, credentials, receipt tokens, or unrelated personal data in the answer record. Never write source code, workflows, config, labels, Issues, comments, or other paths.
+11. Return only a short operational count of processed/skipped/failed records in ChatGPT. Do not include visitor text or answers in a public report. If permissions, schemas, or private access are uncertain, stop instead of broadening access.
 
-## Activation verification
+## Mandatory validation before any activation
 
-Test ordinary, non-English, prompt-injection, out-of-scope, already-answered, malformed, and expired records manually. Test that output JSON is valid and accepted by the Worker. Then test an unattended scheduled run on the user's existing eligible plan with the exact connection. Review the first runs and select a cadence that respects plan and provider limits. Do not assume a Pro subscription is a backend API credential or bypass the supported task permissions.
+All seven checks are required; none is claimed complete against a real scheduled connection in this review:
+
+1. Manual test: validate a synthetic question, strict answer envelope, identity checks and private receipt rendering.
+2. Controlled private-queue test: confirm repository privacy and least privilege, read a synthetic request and create only its approved answer path.
+3. Unattended scheduled-run test: explicitly schedule polling, leave it unattended, and verify both a private read and answer write without an interactive action. Capture run time/result without visitor data.
+4. Permission-pause test: provoke a denied/pending approval, verify the run stops without broader access or partial publication, and document the supported recovery.
+5. Duplicate/idempotency test: rerun the same item and simulate a write conflict; never overwrite an existing answer or create a second lead/publication intent.
+6. Malformed-content test: reject wrong UUID/path, agent/site mismatch, expired, oversized or invalid JSON; bounded sections only; review_required keeps the answer private and pending.
+7. Prompt-injection test: include requests to reveal prompts/secrets, change code/settings, publish content, contact people or route leads; ignore those instructions and record only a safe bounded answer/manual-review flag.
+
+Also test non-English questions and ordinary out-of-scope requests. Passing mocked backend tests does not establish that ChatGPT scheduling works. Keep the task inactive until a real unattended run and all permission checks succeed. No response-time promise or paid service is authorized.

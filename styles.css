@@ -30,3 +30,8 @@
 
 /* Exact supplied hero artwork: retain the complete image at its natural aspect ratio. */
 .hero-art img.qf-hero-mark{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+
+/* Community and human-help extensions preserve the existing identity and hero. */
+.how-steps{grid-template-columns:repeat(4,minmax(0,1fr))}.how-steps h3{font-size:22px}.quiet-layout{display:grid;grid-template-columns:1.3fr 1fr;align-items:start;gap:70px}.quiet-layout>p{font-size:14px;line-height:1.85;color:var(--muted);max-width:610px}.quiet-layout>.primary-link{justify-self:end;margin-top:0}.human-help-intro>.eyebrow{margin-bottom:30px}.human-help-intro h2{font-size:clamp(32px,3.3vw,46px)}.help-link{margin-top:20px;border-top:1px solid var(--line);padding-top:15px;min-height:48px}#social-links{display:flex;gap:15px}#social-links[hidden]{display:none}#social-links a{font-size:11px;min-height:44px;display:flex;align-items:center}
+@media(max-width:1000px){.how-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.quiet-layout{gap:25px}.quiet-layout>.primary-link{gap:20px}}
+@media(max-width:650px){.how-steps,.quiet-layout{grid-template-columns:1fr}.quiet-layout>.primary-link{justify-self:start}.quiet-layout>p{font-size:14px}.human-help-intro>.eyebrow{margin-bottom:23px}}

@@ -28,3 +28,8 @@ Preview: https://questionandform.github.io/
 There is no CNAME or canonical URL for the future questionandform.com domain. Do not change DNS or custom-domain settings as part of this work.
 
 Backend source and placeholders are public, but contain no production secrets or queue data. Never commit .dev.vars, environment files, databases, question exports, credentials or runtime receipts.
+
+
+## Community and human-help review
+
+This review extends the current release with independent consent, conditional help fields, noindex community templates and private manual lead functions. All production gates stay off. Read [the Phase 2 specification](backend/phase2-review.md) for schema migration, consent withdrawal, retention/deletion, dashboard authentication, Facebook/taxonomy and activation blockers. Run `npm test` in backend with Node 22.13+ for both regression and extension suites. Do not merge before screenshot/report approval.

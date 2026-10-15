@@ -1,0 +1,30 @@
+{
+  "example_only": true,
+  "manual_review_required": true,
+  "providers": [
+    {
+      "provider_key": "example-provider-a",
+      "available": false,
+      "lead_types": [
+        "small_home_project"
+      ],
+      "service_areas": [
+        "Example City"
+      ],
+      "project_sizes": [
+        "very_small",
+        "small"
+      ],
+      "timelines": [
+        "within_month",
+        "later"
+      ],
+      "minimum_timeline_days": 7,
+      "maximum_timeline_days": 90,
+      "preferred_characteristics": [
+        "one_day",
+        "materials_available"
+      ]
+    }
+  ]
+}
